@@ -20,7 +20,7 @@ param(
 $ErrorActionPreference = "Stop"
 
 # ── Paths ─────────────────────────────────────────────────────────────────
-$CONF = "$env:ProgramData\BlueStacks\bluestacks.conf"
+$CONF = "$env:ProgramData\BlueStacks_nxt\bluestacks.conf"
 $BACKUP_DIR = "$env:USERPROFILE\.bluestacks-noad-backup"
 $CONF_BACKUP = "$BACKUP_DIR\bluestacks.conf.orig"
 
