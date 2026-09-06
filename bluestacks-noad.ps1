@@ -1,9 +1,9 @@
 # =============================================================================
-#  bluestacks-noad.ps1 — BlueStacks 5 / Air Ad Remover for Windows
+#  bluestacks-noad.ps1 -- BlueStacks 5 / Air Ad Remover for Windows
 #  Tested on BlueStacks 5.21.755.7538
 #
 #  What this script does:
-#   Edits bluestacks.conf — every ad-related config key is set to "0".
+#   Edits bluestacks.conf -- every ad-related config key is set to "0".
 #   The file is then set to read-only so BlueStacks cannot overwrite it.
 #
 #  Undo / restore:
@@ -19,7 +19,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-# ── Paths ────────────────────────────────────────────────────────────────
+# ── Paths ─────────────────────────────────────────────────────────────────
 $CONF = "$env:ProgramData\BlueStacks\bluestacks.conf"
 $BACKUP_DIR = "$env:USERPROFILE\.bluestacks-noad-backup"
 $CONF_BACKUP = "$BACKUP_DIR\bluestacks.conf.orig"
@@ -42,7 +42,7 @@ $CONF_PATCHES = @(
 )
 
 # ── Per-instance ad keys to zero out ──────────────────────────────────────
-# Format: key:value  — value defaults to "0" if omitted
+# Format: key:value  -- value defaults to "0" if omitted
 $CONF_INSTANCE_PATCHES = @(
     "split_ad_enabled:0",
     "ads_screen_width:0",
@@ -65,7 +65,7 @@ function Write-Info {
 }
 
 function Write-Ok {
-    Write-Host "$($Colors.Green)[✓]$($Colors.Reset) $args"
+    Write-Host "$($Colors.Green)[+]$($Colors.Reset) $args"
 }
 
 function Write-Warn {
@@ -73,12 +73,12 @@ function Write-Warn {
 }
 
 function Write-Err {
-    Write-Host "$($Colors.Red)[✗]$($Colors.Reset) $args" -ForegroundColor Red
+    Write-Host "$($Colors.Red)[X]$($Colors.Reset) $args" -ForegroundColor Red
 }
 
 function Write-Section {
     Write-Host ""
-    Write-Host "$($Colors.Cyan)── $args ──$($Colors.Reset)"
+    Write-Host "$($Colors.Cyan)-- $args --$($Colors.Reset)"
 }
 
 # =============================================================================
@@ -119,14 +119,14 @@ function Patch-Config {
     # Remove read-only flag in case it was previously set
     Set-ItemProperty -Path $CONF -Name Attributes -Value "Normal" -Force -ErrorAction SilentlyContinue
 
-    # Backup (only once — never overwrite a clean backup)
+    # Backup (only once - never overwrite a clean backup)
     if (-not (Test-Path $CONF_BACKUP)) {
-        Write-Info "Backing up config to $CONF_BACKUP …"
+        Write-Info "Backing up config to $CONF_BACKUP ..."
         Copy-Item -Path $CONF -Destination $CONF_BACKUP -Force
         Write-Ok "Config backup saved."
     }
     else {
-        Write-Info "Config backup already exists — skipping backup step."
+        Write-Info "Config backup already exists - skipping backup step."
     }
 
     # Read the config file
@@ -188,7 +188,7 @@ function Restore-Config {
     }
 
     Set-ItemProperty -Path $CONF -Name Attributes -Value "Normal" -Force -ErrorAction SilentlyContinue
-    Write-Info "Restoring $CONF from backup…"
+    Write-Info "Restoring $CONF from backup..."
     Copy-Item -Path $CONF_BACKUP -Destination $CONF -Force
     Write-Ok "Config restored."
 }
@@ -199,10 +199,10 @@ function Restore-Config {
 
 function Print-Banner {
     Write-Host ""
-    Write-Host "$($Colors.Cyan)  ╔══════════════════════════════════════════════╗"
-    Write-Host "  ║       BlueStacks Ad Blocker — noad.ps1        ║"
-    Write-Host "  ║         config lock (Layer 2 only)           ║"
-    Write-Host "  ╚══════════════════════════════════════════════╝$($Colors.Reset)"
+    Write-Host "$($Colors.Cyan)  +======================================+"
+    Write-Host "  |  BlueStacks Ad Blocker - noad.ps1   |"
+    Write-Host "  |    config lock (Layer 2 only)      |"
+    Write-Host "  +======================================+$($Colors.Reset)"
     Write-Host ""
 }
 
@@ -215,7 +215,7 @@ function Do-Apply {
     Write-Section "Done"
     Write-Ok "Config patch applied."
     Write-Host ""
-    Write-Host "  $($Colors.Green)Launch BlueStacks — ads will not be shown.$($Colors.Reset)"
+    Write-Host "  $($Colors.Green)Launch BlueStacks - ads will not be shown.$($Colors.Reset)"
     Write-Host ""
     Write-Host "  To revert:  $($Colors.Yellow)powershell -ExecutionPolicy Bypass -File bluestacks-noad.ps1 -Restore$($Colors.Reset)"
     Write-Host ""
@@ -231,14 +231,14 @@ function Do-Restore {
 }
 
 function Do-Status {
-    Write-Host "$($Colors.Cyan)── bluestacks-noad status ──$($Colors.Reset)"
+    Write-Host "$($Colors.Cyan)-- bluestacks-noad status --$($Colors.Reset)"
     Write-Host ""
 
     if (Test-Path $CONF) {
         $fileAttributes = (Get-ItemProperty -Path $CONF).Attributes
         
         if ($fileAttributes -match "ReadOnly") {
-            Write-Host "  $($Colors.Green)[✓]$($Colors.Reset) bluestacks.conf is locked (read-only)"
+            Write-Host "  $($Colors.Green)[+]$($Colors.Reset) bluestacks.conf is locked (read-only)"
         }
         else {
             Write-Host "  $($Colors.Yellow)[!]$($Colors.Reset) bluestacks.conf is NOT locked"
@@ -258,13 +258,13 @@ function Do-Status {
             }
 
             if ($val -eq "0") {
-                Write-Host "  $($Colors.Green)[✓]$($Colors.Reset) ${key} = 0"
+                Write-Host "  $($Colors.Green)[+]$($Colors.Reset) ${key} = 0"
             }
             elseif ($null -eq $val) {
                 Write-Host "  $($Colors.Yellow)[-]$($Colors.Reset) ${key} not found in config"
             }
             else {
-                Write-Host "  $($Colors.Red)[✗]$($Colors.Reset) ${key} = ${val}  ← ads may be active"
+                Write-Host "  $($Colors.Red)[X]$($Colors.Reset) ${key} = ${val}  - ads may be active"
             }
         }
 
@@ -297,19 +297,19 @@ function Do-Status {
                 }
 
                 if ($val -eq $expectedVal) {
-                    Write-Host "  $($Colors.Green)[✓]$($Colors.Reset) ${fullKey} = ${val}"
+                    Write-Host "  $($Colors.Green)[+]$($Colors.Reset) ${fullKey} = ${val}"
                 }
                 elseif ($null -eq $val) {
                     Write-Host "  $($Colors.Yellow)[-]$($Colors.Reset) ${fullKey} not found"
                 }
                 else {
-                    Write-Host "  $($Colors.Red)[✗]$($Colors.Reset) ${fullKey} = ${val}  ← ads may be active"
+                    Write-Host "  $($Colors.Red)[X]$($Colors.Reset) ${fullKey} = ${val}  - ads may be active"
                 }
             }
         }
 
         if (Test-Path $CONF_BACKUP) {
-            Write-Host "  $($Colors.Green)[✓]$($Colors.Reset) Backup exists at $CONF_BACKUP"
+            Write-Host "  $($Colors.Green)[+]$($Colors.Reset) Backup exists at $CONF_BACKUP"
         }
         else {
             Write-Host "  $($Colors.Yellow)[-]$($Colors.Reset) No backup found (patch not yet applied)"
