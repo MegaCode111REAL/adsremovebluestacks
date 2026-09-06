@@ -1,14 +1,55 @@
-# BlueStacks Ad Blocker — `bluestacks-noad.sh`
+# BlueStacks Ad Blocker — Windows Edition
 
-Removes ads from **BlueStacks 5 / BlueStacks Air** on macOS by patching and locking the config file so all ad-related settings are permanently disabled.
+This PowerShell script removes ads from **BlueStacks 5 / BlueStacks Air** on Windows by patching and locking the config file so all ad-related settings are permanently disabled.
 
-Tested on **BlueStacks 5.21.755.7538 (macOS)**.
+Tested on **BlueStacks 5.21.755.7538 (Windows)**.
+
+---
+
+## Requirements
+
+- Windows 10 / Windows 11
+- BlueStacks 5 installed and launched at least once
+- Administrator privileges (for applying/restoring patches)
+- PowerShell 5.0 or later
+
+---
+
+## Usage
+
+### Apply the patch
+
+```powershell
+powershell -ExecutionPolicy Bypass -File bluestacks-noad.ps1
+```
+
+Or with explicit action:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File bluestacks-noad.ps1 -Action Apply
+```
+
+BlueStacks does **not** need to be closed first — but relaunch it after patching for the changes to take effect.
+
+### Check status
+
+No Administrator privileges needed:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File bluestacks-noad.ps1 -Action Status
+```
+
+### Restore original config
+
+```powershell
+powershell -ExecutionPolicy Bypass -File bluestacks-noad.ps1 -Action Restore
+```
 
 ---
 
 ## How it works
 
-The script edits `/Users/Shared/Library/Application Support/BlueStacks/bluestacks.conf` and sets every ad-related key to `"0"`:
+The script edits `%ProgramData%\BlueStacks\bluestacks.conf` and sets every ad-related key to `"0"`:
 
 | Key | What it controls |
 |---|---|
@@ -28,41 +69,7 @@ The script edits `/Users/Shared/Library/Application Support/BlueStacks/bluestack
 | `bst.instance.<name>.ads_screen_width_percentage` | Ad panel width % (set to 0) |
 | `bst.instance.<name>.split_ad_show_times` | Ad show counter (set to -1) |
 
-The file is then **locked** with `chflags uchg` so BlueStacks cannot overwrite it at runtime.
-
----
-
-## Requirements
-
-- macOS
-- BlueStacks 5 installed and launched at least once
-- `sudo` access
-
----
-
-## Usage
-
-### Apply the patch
-
-```sh
-sudo bash bluestacks-noad.sh
-```
-
-BlueStacks does **not** need to be closed first — but relaunch it after patching for the changes to take effect.
-
-### Check status
-
-No `sudo` needed:
-
-```sh
-bash bluestacks-noad.sh --status
-```
-
-### Restore original config
-
-```sh
-sudo bash bluestacks-noad.sh --restore
-```
+The file is then **locked** by setting it to read-only so BlueStacks cannot overwrite it at runtime.
 
 ---
 
@@ -70,10 +77,10 @@ sudo bash bluestacks-noad.sh --restore
 
 Because `bluestacks.conf` is locked, the BlueStacks settings UI may not save some preferences. Temporarily unlock it before opening Settings, then lock it again:
 
-```sh
-sudo chflags nouchg "/Users/Shared/Library/Application Support/BlueStacks/bluestacks.conf"
+```powershell
+Set-ItemProperty -Path "$env:ProgramData\BlueStacks\bluestacks.conf" -Name Attributes -Value "Normal" -Force
 # … change your settings in BlueStacks …
-sudo chflags uchg "/Users/Shared/Library/Application Support/BlueStacks/bluestacks.conf"
+Set-ItemProperty -Path "$env:ProgramData\BlueStacks\bluestacks.conf" -Name Attributes -Value "ReadOnly" -Force
 ```
 
 ---
@@ -84,15 +91,6 @@ The original config is backed up before any modification:
 
 | Backup location | Original file |
 |---|---|
-| `~/.bluestacks-noad-backup/bluestacks.conf.orig` | The unmodified config |
+| `%USERPROFILE%\.bluestacks-noad-backup\bluestacks.conf.orig` | The unmodified config |
 
 The backup is created only once — subsequent runs will not overwrite a clean backup with an already-patched copy.
-
----
-
-## Files
-
-| File | Description |
-|---|---|
-| `bluestacks-noad.sh` | Main script — apply / restore / status |
-| `README.md` | This file |
