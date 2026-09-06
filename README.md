@@ -49,7 +49,7 @@ powershell -ExecutionPolicy Bypass -File bluestacks-noad.ps1 -Action Restore
 
 ## How it works
 
-The script edits `%ProgramData%\BlueStacks\bluestacks.conf` and sets every ad-related key to `"0"`:
+The script edits `%ProgramData%\BlueStacks_nxt\bluestacks.conf` and sets every ad-related key to `"0"`:
 
 | Key | What it controls |
 |---|---|
