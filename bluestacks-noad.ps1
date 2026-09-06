@@ -147,7 +147,7 @@ function Patch-Config {
     # Zero out per-instance ad keys for every discovered instance
     $instances = @()
     $configContent -split "`n" | ForEach-Object {
-        if ($_ -match '^bst\.instance\.([^\.]+)\.') {
+        if ($_ -match '^bst\.instance\.([^.]+)\.') {
             $instance = $matches[1]
             if ($instance -notin $instances) {
                 $instances += $instance
@@ -271,7 +271,7 @@ function Do-Status {
         # Per-instance check
         $instances = @()
         $configContent -split "`n" | ForEach-Object {
-            if ($_ -match '^bst\.instance\.([^\.]+)\.') {
+            if ($_ -match '^bst\.instance\.([^.]+)\.') {
                 $instance = $matches[1]
                 if ($instance -notin $instances) {
                     $instances += $instance
